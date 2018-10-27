@@ -1,4 +1,4 @@
-#每一个page有40条记录88
+#每一个page有40条记录8834
 #无需设置停顿，爬虫不限制
 import requests
 from bs4 import BeautifulSoup
