@@ -36,7 +36,7 @@ header = {
 url = 'https://www.lagou.com/jobs/positionAjax.json?px=new&city='+cityName+'&needAddtionalResult=false'
    #  https://www.lagou.com/jobs/positionAjax.json?px=default&city=        &needAddtionalResult=false
 
-for num in range(300,302):
+for num in range(1,3):
 
     print('-----------')
     #取随机延迟,防止IP被封

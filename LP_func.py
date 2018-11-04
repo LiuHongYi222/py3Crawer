@@ -70,7 +70,7 @@ def crawerLiePin(cityName,searchKey,page = 0):
 
     welfareCount = 0                       #其他的属性都是必有，count=40 ,但福利字段可能为空
     count = len(positionNameBs)
-    print(count)
+    # print(count)
     for i in range(0,count):                  #pageSize = 40,该for表示一个页码
 
 
@@ -88,25 +88,25 @@ def crawerLiePin(cityName,searchKey,page = 0):
 
         #insert   前面几个 +  cityname  +searchkey （例如，北京，java）
         # print('')
-        # print('**********************************************************************************')
-        # print('----工作年限---')
-        # print(workYear)
-        # print('----地区---')
-        # print(area)
-        # print('-----岗位名称--')
-        # print(positionName)
-        # print('----公司名称---')
-        # print(companyName)
-        # print('-----薪水--')
-        # print(salary)
-        # print('----学历要求---')
-        # print(education)
-        # print('-----发布时间--')
-        # print(createTime)
-        # print('-----岗位招聘类型--')
-        # print(jobType)
-        # print('-----福利（可能为空）--')
-        # print(welfare)
+        print('**********************************************************************************')
+        print('----工作年限---')
+        print(workYear)
+        print('----地区---')
+        print(area)
+        print('-----岗位名称--')
+        print(positionName)
+        print('----公司名称---')
+        print(companyName)
+        print('-----薪水--')
+        print(salary)
+        print('----学历要求---')
+        print(education)
+        print('-----发布时间--')
+        print(createTime)
+        print('-----岗位招聘类型--')
+        print(jobType)
+        print('-----福利（可能为空）--')
+        print(welfare)
 
 
 
