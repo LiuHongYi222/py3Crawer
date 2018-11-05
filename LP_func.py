@@ -2,8 +2,8 @@
 #无需设置停顿，爬虫不限制
 import requests
 from bs4 import BeautifulSoup
-
-
+import  pymysql
+import  liepin_mysql as DB
 
 def cityToNumber(cityName):
 
@@ -86,28 +86,34 @@ def crawerLiePin(cityName,searchKey,page = 0):
         if ('企业') in jobTypeBs[i].get('title'):
             welfare = (welfareBs[++welfareCount].text.replace('\n', ',')[1:-1])
 
+
+        value = []
+        value = [positionName, area, companyName, salary, workYear, education, createTime, welfare, searchKey]
+        # print(value)
+        #插入数据库
+        DB.dbInsert(value)
+
         #insert   前面几个 +  cityname  +searchkey （例如，北京，java）
         # print('')
-        print('**********************************************************************************')
-        print('----工作年限---')
-        print(workYear)
-        print('----地区---')
-        print(area)
-        print('-----岗位名称--')
-        print(positionName)
-        print('----公司名称---')
-        print(companyName)
-        print('-----薪水--')
-        print(salary)
-        print('----学历要求---')
-        print(education)
-        print('-----发布时间--')
-        print(createTime)
-        print('-----岗位招聘类型--')
-        print(jobType)
-        print('-----福利（可能为空）--')
-        print(welfare)
-
+        # print('**********************************************************************************')
+        # print('----工作年限---')
+        # print(workYear)
+        # print('----地区---')
+        # print(area)
+        # print('-----岗位名称--')
+        # print(positionName)
+        # print('----公司名称---')
+        # print(companyName)
+        # print('-----薪水--')
+        # print(salary)
+        # print('----学历要求---')
+        # print(education)
+        # print('-----发布时间--')
+        # print(createTime)
+        # print('-----岗位招聘类型--')
+        # print(jobType)
+        # print('-----福利（可能为空）--')
+        # print(welfare)
 
 
 
@@ -116,8 +122,13 @@ if __name__ == '__main__':
     # crawerLiePin('020','爬虫')
     # crawerLiePin('010', '爬虫')
     # crawerLiePin('010', '数据库')
-    for i in range(0,5):                  #该for语句表示page,如果搜索结果只有5页，第六页往后自动不会处理，代码健壮
-        crawerLiePin('北京', '产品经理',i)
+    # db = pymysql.connect("134.175.0.45", "root", "583821", "jobCrawer")
 
+    for i in range(0,20):                  #该for语句表示page,如果搜索结果只有5页，第六页往后自动不会处理，代码健壮
+        crawerLiePin('北京', '产品经理',i )
+        crawerLiePin('北京', 'JAVA', i )
+        crawerLiePin('北京', 'python', i )
+
+    # db.close()
 
 
