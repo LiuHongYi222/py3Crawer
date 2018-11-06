@@ -1,4 +1,4 @@
-#每一个page有40条记录8834 更新
+#每一个page有40条记录
 #无需设置停顿，爬虫不限制
 import requests
 from bs4 import BeautifulSoup
@@ -32,9 +32,7 @@ def cityToNumber(cityName):
     if (cityName == '厦门'):
         return '090040'
 
-
-
-def crawerLiePin(cityName,searchKey,page = 0):
+def argu(cityName,searchKey):
 
     my_headers = {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36'}
@@ -53,7 +51,12 @@ def crawerLiePin(cityName,searchKey,page = 0):
                +base_url2 + searchKey  \
                 +base_url3     #猎头招聘网的传参是城市电话代码
                                               #页码
+    return  my_headers,base_url
 
+#输入一个page   出来40个size记录
+def crawerLiePin(cityName,searchKey,page = 0):
+
+    my_headers,base_url = argu(cityName,searchKey)
     r=requests.get(base_url+str(page), headers = my_headers)
     bs = BeautifulSoup(r.text,'lxml')
 
@@ -67,10 +70,11 @@ def crawerLiePin(cityName,searchKey,page = 0):
     createTimeBs = bs.select(".time-info > time")          #招聘的发布时间HTML节点
     jobTypeBs = (bs.select('.icon'))                       #招聘类型的HTML节点（企业直招，急招，猎头招聘等等）
 
-
     welfareCount = 0                       #其他的属性都是必有，count=40 ,但福利字段可能为空
+    # print(len(welfareBs),'-------------------------------')
     count = len(positionNameBs)
     # print(count)
+    db = pymysql.connect("134.175.0.45", "root", "583821", "jobCrawer")
     for i in range(0,count):                  #pageSize = 40,该for表示一个页码
 
 
@@ -82,16 +86,48 @@ def crawerLiePin(cityName,searchKey,page = 0):
         education       =    educationBs[i].text
         createTime      =    createTimeBs[i].get('title')
         jobType         =    jobTypeBs[i].get('title')
-        welfare = ''
-        if ('企业') in jobTypeBs[i].get('title'):
-            welfare = (welfareBs[++welfareCount].text.replace('\n', ',')[1:-1])
+        welfare = ''                                    #猎聘网站中，目前只发现企业招聘具有福利
+        if ('企业') in jobTypeBs[i].get('title')  :
 
+            welfare = (welfareBs[welfareCount].text.replace('\n', ',')[1:-1])
+            # print(welfareCount,welfare)
+            if(welfareCount < len(welfareBs)-1):
+                welfareCount += 1
 
-        value = []
-        value = [positionName, area, companyName, salary, workYear, education, createTime, welfare, searchKey]
+        value = [positionName, cityName, companyName, salary, workYear, education, createTime, welfare, searchKey,jobType,area]
         # print(value)
         #插入数据库
-        DB.dbInsert(value)
+        DB.dbInsert(db,value)
+
+
+    #提交insert，之后关闭数据库
+    db.commit()
+    db.close()
+
+
+if __name__ == '__main__':
+
+    #  c%23是c#的关键词，   c%2B%2B是C++的关键词
+    positionName = ['java',
+                    'python',
+                    'c%23',
+                    'c%2B%2B',
+                    'php',
+                    '数据库',
+                    '数据挖掘'
+                    ]
+    positionNameLen = len(positionName)
+    for i in range(0,10):                  #该range语句表示page范围,  每page有40条工作职位
+        #crawerLiePin('北京', '产品经理',i )
+        crawerLiePin('北京', '后台开发', i )
+        crawerLiePin('北京', '爬虫', i )
+
+    # db.close()
+
+
+
+
+
 
         #insert   前面几个 +  cityname  +searchkey （例如，北京，java）
         # print('')
@@ -114,21 +150,3 @@ def crawerLiePin(cityName,searchKey,page = 0):
         # print(jobType)
         # print('-----福利（可能为空）--')
         # print(welfare)
-
-
-
-
-if __name__ == '__main__':
-    # crawerLiePin('020','爬虫')
-    # crawerLiePin('010', '爬虫')
-    # crawerLiePin('010', '数据库')
-    # db = pymysql.connect("134.175.0.45", "root", "583821", "jobCrawer")
-
-    for i in range(0,20):                  #该for语句表示page,如果搜索结果只有5页，第六页往后自动不会处理，代码健壮
-        crawerLiePin('北京', '产品经理',i )
-        crawerLiePin('北京', 'JAVA', i )
-        crawerLiePin('北京', 'python', i )
-
-    # db.close()
-
-
