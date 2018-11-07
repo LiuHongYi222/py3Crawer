@@ -117,6 +117,16 @@ if __name__ == '__main__':
                     '数据挖掘'
                     ]
     positionNameLen = len(positionName)
+    cityName =     ['北京',
+                    '上海',
+                    '厦门',
+                    '广州',
+                    '深圳',
+                    '杭州',
+                    '成都'
+                    ]
+    cityNameLen = len(cityName)
+    positionNameLen = len(positionName)
     for i in range(0,10):                  #该range语句表示page范围,  每page有40条工作职位
         #crawerLiePin('北京', '产品经理',i )
         crawerLiePin('北京', '后台开发', i )
