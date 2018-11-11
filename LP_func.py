@@ -4,6 +4,10 @@ import requests
 from bs4 import BeautifulSoup
 import  pymysql
 import  liepin_mysql as DB
+import  time
+
+
+
 
 def cityToNumber(cityName):
 
@@ -75,6 +79,7 @@ def crawerLiePin(cityName,searchKey,page = 0):
     count = len(positionNameBs)
     # print(count)
     db = pymysql.connect("134.175.0.45", "root", "583821", "jobCrawer")
+    getTime = (time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
     for i in range(0,count):                  #pageSize = 40,该for表示一个页码
 
 
@@ -94,7 +99,7 @@ def crawerLiePin(cityName,searchKey,page = 0):
             if(welfareCount < len(welfareBs)-1):
                 welfareCount += 1
 
-        value = [positionName, cityName, companyName, salary, workYear, education, createTime, welfare, searchKey,jobType,area]
+        value = [positionName, cityName, companyName, salary, workYear, education, createTime, welfare, searchKey,jobType,area,getTime]
         # print(value)
         #插入数据库
         DB.dbInsert(db,value)
@@ -127,10 +132,9 @@ if __name__ == '__main__':
                     ]
     cityNameLen = len(cityName)
     positionNameLen = len(positionName)
-    for i in range(0,10):                  #该range语句表示page范围,  每page有40条工作职位
-        #crawerLiePin('北京', '产品经理',i )
-        crawerLiePin('北京', '后台开发', i )
-        crawerLiePin('北京', '爬虫', i )
+    for i in range(0,20):                  #该range语句表示page范围,  每page有40条工作职位
+        crawerLiePin('杭州', '产品经理',i )
+
 
     # db.close()
 

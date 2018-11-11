@@ -9,8 +9,8 @@ def dbInsert(db,value):
    cursor = db.cursor()
 
    # SQL 插入语句
-   sql = "INSERT INTO liepin(positionName,city,companyName,salary,workYear,education,createTime,welfare,searchKey,jobType,area)  " \
-            "VALUES(%s, %s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+   sql = "INSERT INTO liepin(positionName,city,companyName,salary,workYear,education,createTime,welfare,searchKey,jobType,area,getTime)  " \
+            "VALUES(%s, %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
 
    try:
       cursor.execute(sql,value)

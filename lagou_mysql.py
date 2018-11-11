@@ -11,8 +11,8 @@ def dbInsert(db,value):
    cursor = db.cursor()
 
    # SQL 插入语句
-   sql = "INSERT INTO lagou(workYear,area,positionName,companyName,salary,education,createTime,welfare,city,searchKey,positionId) " \
-            "VALUES(%s, %s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+   sql = "INSERT INTO lagou(workYear,area,positionName,companyName,salary,education,createTime,welfare,city,searchKey,positionId,getTime) " \
+            "VALUES(%s, %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
 
    try:
       cursor.execute(sql,value)

@@ -8,7 +8,7 @@
 import  pymysql
 import  lagou_mysql as DB
 import requests
-from time import sleep
+import  time
 import random
 import  json
 
@@ -57,10 +57,13 @@ def crawerLaGou(cityName,searchKey,page =0 ):
     data=result['content']['positionResult']['result']
     # totalCount = result['content']['positionResult']['totalCount']
 
+
     db = pymysql.connect("134.175.0.45", "root", "583821", "jobCrawer")
     #data的type为list         len为15  每一个page有15条记录
     #data[0] 元素为dict
+    getTime = (time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
     for datas in data:
+
 
         workYear = datas['workYear']
         area = datas['district']
@@ -79,13 +82,13 @@ def crawerLaGou(cityName,searchKey,page =0 ):
            welfare = (welfare[0:-1])
 
         value = [workYear,area,positionName,companyName,salary,
-                 education,createTime,welfare,city,searchKey,positionId]
+                 education,createTime,welfare,city,searchKey,positionId,getTime]
         # print(value)
         DB.dbInsert(db,value)
     db.commit()
     db.close()
     print('..... sleeping .....')
-    sleep(random.randint(22,25))
+    time.sleep(random.randint(22,25))
 
 
 
@@ -110,9 +113,9 @@ if __name__ == '__main__':
                     ]
     cityNameLen = len(cityName)
 
-    for i in range(1,15):                  #不能从0开始，猎聘可以，拉勾不行
+    for i in range(1,5):                  #不能从0开始，猎聘可以，拉勾不行
         #crawerLiePin('北京', '产品经理',i )
-        crawerLaGou('北京', 'python', i )
+        crawerLaGou('杭州', '数据挖掘', i )
         # sleep
         # crawerlagou('北京', '爬虫', i )
 
