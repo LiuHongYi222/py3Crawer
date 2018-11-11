@@ -1,4 +1,4 @@
-#拉勾网的爬虫源码， 18-10-17可用
+
 #利用requests库的post请求访问拉勾网，返回j---son，直接在j不急不急son查找字段
 #间隔必须在 20 秒以上
 
@@ -110,9 +110,9 @@ if __name__ == '__main__':
                     ]
     cityNameLen = len(cityName)
 
-    for i in range(1,15):                  #不能从0开始，猎聘可以，拉勾不行
+    for i in range(1,10):                  #不能从0开始，猎聘可以，拉勾不行
         #crawerLiePin('北京', '产品经理',i )
-        crawerLaGou('北京', 'python', i )
+        crawerLaGou('北京', '前端', i )
         # sleep
         # crawerlagou('北京', '爬虫', i )
 

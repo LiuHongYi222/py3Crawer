@@ -127,10 +127,10 @@ if __name__ == '__main__':
                     ]
     cityNameLen = len(cityName)
     positionNameLen = len(positionName)
-    for i in range(0,10):                  #该range语句表示page范围,  每page有40条工作职位
+    for i in range(0,30):                  #该range语句表示page范围,  每page有40条工作职位
         #crawerLiePin('北京', '产品经理',i )
-        crawerLiePin('北京', '后台开发', i )
-        crawerLiePin('北京', '爬虫', i )
+        crawerLiePin('上海', '前端', i )
+        crawerLiePin('杭州', '爬虫', i )
 
     # db.close()
 
@@ -159,4 +159,4 @@ if __name__ == '__main__':
         # print('-----岗位招聘类型--')
         # print(jobType)
         # print('-----福利（可能为空）--')
-        # print(welfare)
+        # print(welfaret)
