@@ -12,16 +12,23 @@ def dbInsert(db,value):
    sql = "INSERT INTO liepin(positionName,city,companyName,salary,workYear,education," \
          "createTime,welfare,searchKey,jobType,area,getTime,detail,positionId)  " \
             "VALUES(%s, %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+   file = r'liePinLog.txt'
+   f= open(file, 'a+')
 
    try:
       cursor.execute(sql,value)
-      print('successfully inset one record to liepin table !' )
-      # db.commit()
+      print('Insert one record ('+ value[13]+value[0] +') to liepin table at time:' + value[11])
+      f.write('Insert one record ('+ value[13]+value[0] +') to liepin table at time:' + value[11] +'\n')
+
    except Exception as err:
       # 发生错误时回滚
-      print(err)
+      print(type(err),err)
+      f.write(repr(err))
+      f.write('at time:' + value[11])
+      f.write('\n')
       db.rollback()
 
-   # 关闭数据库连接
+   f.close()
+      # 关闭数据库连接
    # db.commit()
    # db.close()

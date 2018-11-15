@@ -1,5 +1,5 @@
-#每一个page有40条记录
-#无需设置停顿，爬虫不限制
+#猎聘网，每一个page有40条记录
+#第一级简介信息爬虫无需设置反爬虫，但是第二级链接详细信息有反爬机制，目前没找到方法
 import requests
 from bs4 import BeautifulSoup
 import  pymysql
@@ -63,8 +63,19 @@ def crawerLiePin(cityName,searchKey,page = 0):
     }
 
     my_headers,base_url = argu(cityName,searchKey)
-    r=requests.get(base_url+str(page), headers = my_headers)
-    bs = BeautifulSoup(r.text,'lxml')
+    try:
+        r = requests.get(base_url + str(page), headers=my_headers)
+    except Exception as err:
+        file = r'liePinLog.txt'
+        f = open(file, 'a+')
+        f.write('A base_url error :')
+        f.write(repr(err))
+        f.write('at time:' +  (time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))) )
+        f.write('\n')
+        f.close()
+        print(err)
+        return
+    bs = BeautifulSoup(r.text, 'lxml')
     r.close()
 
     positionNameBs = bs.select("div.job-info > h3 > a")    #岗位名称的HTML节点
@@ -91,9 +102,21 @@ def crawerLiePin(cityName,searchKey,page = 0):
             detailHtml = rawDetailHtml
 
         # 此处sleep不用太长
-        time.sleep(1.3)
+        time.sleep(0.1)
+
         # 对详细信息链接再进行一次爬虫   抓取岗位具体信息（包括职位要求，岗位职责等等）
-        rr = requests.get(str(detailHtml), headers=my_headers)
+        try:
+            rr = requests.get(str(detailHtml), headers=my_headers)
+        except Exception as err:
+            file = r'liePinLog.txt'
+            f = open(file, 'a+')
+            f.write('A detailHtml error :')
+            f.write(repr(err))
+            f.write('at time:' + (time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))))
+            f.write('\n')
+            f.close()
+            print(err)
+            continue
         bsDetail = BeautifulSoup(rr.text, 'lxml')
         rr.close()
 
@@ -108,11 +131,12 @@ def crawerLiePin(cityName,searchKey,page = 0):
                 (bsDetail.select("div.job-info-content "))[0].text
                     .replace('	', '').replace('<br/>','').replace(' ','').replace('\n',''))
 
-        positionId = detailHtml[23:].replace('.shtml', '/')
+        positionId = detailHtml[23:].replace('.shtml', '/').replace('\n','').replace('\r','')
         getTime = (time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
         workYear        =    workYearBs[i].text.split('\n')[4]
         area            =    areaBs[i].text
-        positionName    =    positionNameBs[i].text.replace('	','').replace('\n','')
+        positionName    =    positionNameBs[i].text.replace('	','').replace('\n','').\
+                                    replace(' ','').replace('\r\n','').replace('\r','')
         companyName     =    companyNameBs[i].text
         salary          =    salaryBs[i].text
         education       =    educationBs[i].text
@@ -133,9 +157,9 @@ def crawerLiePin(cityName,searchKey,page = 0):
 
         #提交insert，之后关闭数据库，
         db.commit()
-        time.sleep(1.2)
+        time.sleep(0.1)
     db.close()
-    time.sleep(1)
+    # time.sleep(1)
 
 
 
@@ -163,6 +187,8 @@ if __name__ == '__main__':
 
     # 该range语句表示抓取的page范围, 猎聘网中每page有40条工作职位，其页面的最大值为100
     # page0代表第一页，以此类推
-    for page in range(0,1):
-        crawerLiePin('杭州', 'java',page )
+    for page in range(0,5):
+        crawerLiePin('北京', '前端',page )
+        crawerLiePin('上海', '产品经理', page)
+        crawerLiePin('成都', 'java', page)
 
