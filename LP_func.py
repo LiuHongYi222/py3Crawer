@@ -6,9 +6,6 @@ import  pymysql
 import  liepin_mysql as DB
 import  time
 
-
-
-
 def cityToNumber(cityName):
 
     if (cityName == '北京'):
@@ -60,9 +57,15 @@ def argu(cityName,searchKey):
 #输入一个page   出来40个size记录
 def crawerLiePin(cityName,searchKey,page = 0):
 
+    proxies = {
+        "http": "http://134.175.0.45:2765",
+        "https": "http://134.175.0.45:2765",
+    }
+
     my_headers,base_url = argu(cityName,searchKey)
     r=requests.get(base_url+str(page), headers = my_headers)
     bs = BeautifulSoup(r.text,'lxml')
+    r.close()
 
     positionNameBs = bs.select("div.job-info > h3 > a")    #岗位名称的HTML节点
     areaBs = bs.select(".area")                            #工作地区的HTML节点（一般是城市+区域）
@@ -73,16 +76,40 @@ def crawerLiePin(cityName,searchKey,page = 0):
     workYearBs = bs.select(".condition ")                  #工作年限要求的HTML节点
     createTimeBs = bs.select(".time-info > time")          #招聘的发布时间HTML节点
     jobTypeBs = (bs.select('.icon'))                       #招聘类型的HTML节点（企业直招，急招，猎头招聘等等）
-
-    welfareCount = 0                       #其他的属性都是必有，count=40 ,但福利字段可能为空
-    # print(len(welfareBs),'-------------------------------')
+    welfareCount = 0     #其他的属性都是必有，count=40 ,但福利字段可能为空，所以不一定是40,因此此处单独计数
     count = len(positionNameBs)
-    # print(count)
+
     db = pymysql.connect("134.175.0.45", "root", "583821", "jobCrawer")
-    getTime = (time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
+
     for i in range(0,count):                  #pageSize = 40,该for表示一个页码
 
+        detailHtml =''
+        rawDetailHtml = positionNameBs[i].get('href')
+        if (not 'https' in rawDetailHtml):
+            detailHtml = ('https://www.liepin.com' + rawDetailHtml )
+        else :
+            detailHtml = rawDetailHtml
 
+        # 此处sleep不用太长
+        time.sleep(1.3)
+        # 对详细信息链接再进行一次爬虫   抓取岗位具体信息（包括职位要求，岗位职责等等）
+        rr = requests.get(str(detailHtml), headers=my_headers)
+        bsDetail = BeautifulSoup(rr.text, 'lxml')
+        rr.close()
+
+        # 以下字段是职位描述（企、猎、优等三种类型）：  不固定格式，一般包括：岗位描述岗位的要求任职要求等等
+        if( not  '/cjob' in detailHtml):
+            detail = (
+                (bsDetail.select("div.content-word "))[0].text
+                    .replace('	','').replace('<br/>', '').replace(' ', '').replace('\n', ''))
+        # 以下字段是职位描述（直 类型）：              不固定格式，一般包括：岗位描述岗位的要求任职要求等等
+        else:
+            detail = (
+                (bsDetail.select("div.job-info-content "))[0].text
+                    .replace('	', '').replace('<br/>','').replace(' ','').replace('\n',''))
+
+        positionId = detailHtml[23:].replace('.shtml', '/')
+        getTime = (time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
         workYear        =    workYearBs[i].text.split('\n')[4]
         area            =    areaBs[i].text
         positionName    =    positionNameBs[i].text.replace('	','').replace('\n','')
@@ -95,24 +122,26 @@ def crawerLiePin(cityName,searchKey,page = 0):
         if ('企业') in jobTypeBs[i].get('title')  :
 
             welfare = (welfareBs[welfareCount].text.replace('\n', ',')[1:-1])
-            # print(welfareCount,welfare)
             if(welfareCount < len(welfareBs)-1):
                 welfareCount += 1
 
-        value = [positionName, cityName, companyName, salary, workYear, education, createTime, welfare, searchKey,jobType,area,getTime]
-        # print(value)
-        #插入数据库
-        DB.dbInsert(db,value)
+        # 利用list存储一条mysql记录，包括以下字段
+        value = [positionName, cityName, companyName, salary, workYear, education,
+                 createTime, welfare, searchKey,jobType,area,getTime,detail,positionId]
 
+        DB.dbInsert(db,value)     #插入数据库
 
-    #提交insert，之后关闭数据库
-    db.commit()
+        #提交insert，之后关闭数据库，
+        db.commit()
+        time.sleep(1.2)
     db.close()
+    time.sleep(1)
+
 
 
 if __name__ == '__main__':
 
-    #  c%23是c#的关键词，   c%2B%2B是C++的关键词
+    #  c%23是c#的关键词,c%2B%2B是C++的关键词
     positionName = ['java',
                     'python',
                     'c%23',
@@ -131,36 +160,9 @@ if __name__ == '__main__':
                     '成都'
                     ]
     cityNameLen = len(cityName)
-    positionNameLen = len(positionName)
-    for i in range(0,20):                  #该range语句表示page范围,  每page有40条工作职位
-        crawerLiePin('杭州', '产品经理',i )
 
+    # 该range语句表示抓取的page范围, 猎聘网中每page有40条工作职位，其页面的最大值为100
+    # page0代表第一页，以此类推
+    for page in range(0,1):
+        crawerLiePin('杭州', 'java',page )
 
-    # db.close()
-
-
-
-
-
-
-        #insert   前面几个 +  cityname  +searchkey （例如，北京，java）
-        # print('')
-        # print('**********************************************************************************')
-        # print('----工作年限---')
-        # print(workYear)
-        # print('----地区---')
-        # print(area)
-        # print('-----岗位名称--')
-        # print(positionName)
-        # print('----公司名称---')
-        # print(companyName)
-        # print('-----薪水--')
-        # print(salary)
-        # print('----学历要求---')
-        # print(education)
-        # print('-----发布时间--')
-        # print(createTime)
-        # print('-----岗位招聘类型--')
-        # print(jobType)
-        # print('-----福利（可能为空）--')
-        # print(welfare)
