@@ -90,7 +90,7 @@ def crawerLiePin(cityName,searchKey,page = 0):
     welfareCount = 0     #其他的属性都是必有，count=40 ,但福利字段可能为空，所以不一定是40,因此此处单独计数
     count = len(positionNameBs)
 
-    db = pymysql.connect("134.175.0.45", "root", "583821", "jobCrawer")
+    db = pymysql.connect("134.175.0.45", "lhy", "628628", "jobCrawer")
 
     for i in range(0,count):                  #pageSize = 40,该for表示一个页码
 
@@ -187,8 +187,8 @@ if __name__ == '__main__':
 
     # 该range语句表示抓取的page范围, 猎聘网中每page有40条工作职位，其页面的最大值为100
     # page0代表第一页，以此类推
-    for page in range(0,5):
-        crawerLiePin('北京', '前端',page )
-        crawerLiePin('上海', '产品经理', page)
-        crawerLiePin('成都', 'java', page)
+    for page in range(0,10):
+        crawerLiePin('北京', 'python',page )
+        crawerLiePin('上海', 'java', page)
+        crawerLiePin('杭州', 'c%2B%2B', page)
 
