@@ -176,7 +176,7 @@ if __name__ == '__main__':
     thread = []
     for page in range(0, 20):
         t = threading.Thread(target = crawerLiePin,
-                             args = ('北京', 'java',page,db,))
+                             args = ('杭州', 'java',page,db,))
         thread.append(t)
 
 
