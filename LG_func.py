@@ -71,7 +71,7 @@ def crawerLaGou(cityName,searchKey,page =0 ):
         companyName = datas['companyFullName']
         salary = datas['salary']
         education = datas['education']
-        createTime =  (datas['createTime'][:10] +' '+ datas['formatCreateTime'][0:-2])
+        createTime =  (datas['createTime'][:10] +' '+ datas['formatCreateTime'])
         city  = cityName
         positionId = datas['positionId']
         welfare = ''
@@ -84,7 +84,8 @@ def crawerLaGou(cityName,searchKey,page =0 ):
         value = [workYear,area,positionName,companyName,salary,
                  education,createTime,welfare,city,searchKey,positionId,getTime]
         # print(value)
-        DB.dbInsert(db,value)
+        # DB.dbInsert(db,value)
+        print(value)
     db.commit()
     db.close()
     print('..... sleeping .....')
@@ -115,7 +116,7 @@ if __name__ == '__main__':
 
     for i in range(1,5):                  #不能从0开始，猎聘可以，拉勾不行
         #crawerLiePin('北京', '产品经理',i )
-        crawerLaGou('杭州', '数据挖掘', i )
+        crawerLaGou('天津', 'php', i )
         # sleep
         # crawerlagou('北京', '爬虫', i )
 
