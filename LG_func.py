@@ -58,7 +58,7 @@ def crawerLaGou(cityName,searchKey,page =0 ):
     # totalCount = result['content']['positionResult']['totalCount']
 
 
-    db = pymysql.connect("134.175.0.45", "root", "583821", "jobCrawer")
+    db = pymysql.connect("134.175.0.45", "lhy", "628628", "jobCrawer")
     #data的type为list         len为15  每一个page有15条记录
     #data[0] 元素为dict
     getTime = (time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
